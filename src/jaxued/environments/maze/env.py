@@ -92,6 +92,7 @@ class Maze(UnderspecifiedEnv):
         self,
         max_height=13,
         max_width=13,
+        max_steps_in_episode=250,
         agent_view_size=5,
         see_agent = False,
         normalize_obs = False,
@@ -101,6 +102,7 @@ class Maze(UnderspecifiedEnv):
         super().__init__()
         self.max_height = max_height
         self.max_width = max_width
+        self.max_steps_in_episode = max_steps_in_episode
         self.agent_view_size = agent_view_size
         self.see_agent = see_agent
         self.normalize_obs = normalize_obs
@@ -166,7 +168,7 @@ class Maze(UnderspecifiedEnv):
 
     def is_terminal(self, state: EnvState, params: EnvParams) -> bool:
         """Check whether state is terminal."""
-        done_steps = state.time >= params.max_steps_in_episode
+        done_steps = state.time >= self.max_steps_in_episode
         return jnp.logical_or(done_steps, state.terminal)
         
     def _get_full_obs(self, state: EnvState) -> Observation:
@@ -233,7 +235,7 @@ class Maze(UnderspecifiedEnv):
         agent_dir = (state.agent_dir + agent_dir_offset) % 4
 
         if self.penalize_time:
-            reward = (1.0 - 0.9*((state.time+1)/params.max_steps_in_episode))*fwd_pos_has_goal
+            reward = (1.0 - 0.9*((state.time+1)/self.max_steps_in_episode))*fwd_pos_has_goal
         else:
             reward = jax.lax.select(fwd_pos_has_goal, 1., 0.)
 
