@@ -111,7 +111,7 @@ class Maze(UnderspecifiedEnv):
 
     @property
     def default_params(self) -> EnvParams:
-        return EnvParams()
+        return EnvParams(max_steps_in_episode=self.max_steps_in_episode)
 
     def step_env(
         self,
